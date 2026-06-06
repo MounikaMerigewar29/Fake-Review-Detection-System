@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Fake Review Detection System</title>
+
+```
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #1f4037, #99f2c8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .container {
+        background: white;
+        width: 520px;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        text-align: center;
+    }
+
+    h1 {
+        margin-bottom: 10px;
+        color: #1f4037;
+    }
+
+    .subtitle {
+        font-size: 14px;
+        color: gray;
+        margin-bottom: 20px;
+    }
+
+    textarea, input {
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+        margin-top: 10px;
+    }
+
+    textarea {
+        height: 120px;
+        resize: none;
+    }
+
+    button {
+        margin-top: 15px;
+        padding: 10px 25px;
+        border: none;
+        border-radius: 25px;
+        background: linear-gradient(90deg, #1f4037, #99f2c8);
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s ease;
+    }
+
+    button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .result-box {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 10px;
+        background: #f4f4f4;
+        text-align: left;
+    }
+
+    .prediction {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .confidence {
+        font-size: 14px;
+    }
+
+    .fake {
+        color: red;
+    }
+
+    .genuine {
+        color: green;
+    }
+
+    hr {
+        margin: 25px 0;
+    }
+
+    canvas {
+        margin-top: 15px;
+    }
+
+    .footer {
+        margin-top: 15px;
+        font-size: 12px;
+        color: gray;
+    }
+</style>
+```
+
+</head>
+
+<body>
+
+<div class="container">
+    <h1>AI Fake Review Detector</h1>
+    <div class="subtitle">
+        Logistic Regression + TF-IDF (Bi-grams) Model
+    </div>
+
+```
+<!-- SINGLE REVIEW -->
+<form action="/predict" method="POST">
+    <textarea name="review" placeholder="Enter review text here..." required></textarea>
+    <button type="submit">Analyze Review</button>
+</form>
+
+{% if corrected_text %}
+<div class="result-box">
+    <div class="confidence"><b>Corrected Input:</b> {{ corrected_text }}</div>
+</div>
+{% endif %}
+
+{% if prediction %}
+<div class="result-box">
+    <div class="prediction">Prediction: {{ prediction }}</div>
+    <div class="confidence">Confidence: {{ confidence }}%</div><br>
+    <div class="confidence fake">Fake Probability: {{ fake_probability }}%</div>
+    <div class="confidence genuine">Genuine Probability: {{ genuine_probability }}%</div>
+</div>
+{% endif %}
+
+<hr>
+
+<!-- PRODUCT LINK ANALYSIS -->
+<h3>Analyze Product Reviews</h3>
+
+<form action="/analyze_link" method="POST">
+    <input type="text" name="product_link" placeholder="Enter review link..." required>
+    <button type="submit">Analyze Product</button>
+</form>
+
+{% if fake_percent is defined %}
+<div class="result-box">
+    <div class="prediction">Product Review Analysis</div>
+
+    <div class="confidence fake">Fake Reviews: {{ fake_percent }}%</div>
+    <div class="confidence genuine">Genuine Reviews: {{ genuine_percent }}%</div>
+
+    <div class="confidence"><b>Verdict:</b> {{ verdict }}</div>
+    <div class="confidence">Source: {{ source }}</div>
+
+    <canvas id="chart"></canvas>
+</div>
+
+<script>
+    const fake = parseFloat("{{ fake_percent | default(0) }}");
+    const genuine = parseFloat("{{ genuine_percent | default(0) }}");
+
+    const ctx = document.getElementById('chart');
+
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Fake', 'Genuine'],
+                datasets: [{
+                    data: [fake, genuine],
+                    backgroundColor: ['#ff4d4d', '#4CAF50']
+                }]
+            }
+        });
+    }
+</script>
+{% endif %}
+
+<div class="footer">
+    Developed for Machine Learning Project Presentation
+</div>
+```
+
+</div>
+
+</body>
+</html>
